@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Library API</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 30px;
+        }
+        
+        .section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.95em;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .results {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+        }
+        
+        .book-item {
+            background: #f0f0f0;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #667eea;
+        }
+        
+        .book-item strong {
+            color: #667eea;
+        }
+        
+        .status-available {
+            color: green;
+            font-weight: bold;
+        }
+        
+        .status-unavailable {
+            color: red;
+            font-weight: bold;
+        }
+        
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+        
+        .success {
+            color: green;
+            margin-top: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+            
+            header h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Book Library API</h1>
+            <p>African Books Collection - Nigeria & Ghana</p>
+        </header>
+        
+        <div class="content">
+            <!-- Get All Books Section -->
+            <div class="section">
+                <h2>Get All Books</h2>
+                <button onclick="getAllBooks()">Fetch All Books</button>
+                <div class="results" id="allBooksResult"></div>
+            </div>
+            
+            <!-- Get Book by ID Section -->
+            <div class="section">
+                <h2>Get Book by ID</h2>
+                <div class="form-group">
+                    <label for="bookId">Book ID:</label>
+                    <input type="number" id="bookId" placeholder="Enter book ID" min="1">
+                </div>
+                <button onclick="getBookById()">Get Book</button>
+                <div class="results" id="bookByIdResult"></div>
+            </div>
+            
+            <!-- Add New Book Section -->
+            <div class="section">
+                <h2>Add New Book</h2>
+                <div class="form-group">
+                    <label for="title">Title:</label>
+                    <input type="text" id="title" placeholder="Book title">
+                </div>
+                <div class="form-group">
+                    <label for="author">Author:</label>
+                    <input type="text" id="author" placeholder="Author name">
+                </div>
+                <div class="form-group">
+                    <label for="genre">Genre:</label>
+                    <input type="text" id="genre" placeholder="Genre">
+                </div>
+                <div class="form-group">
+                    <label for="country">Country:</label>
+                    <select id="country">
+                        <option value="">Select Country</option>
+                        <option value="Nigeria">Nigeria</option>
+                        <option value="Ghana">Ghana</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="year">Year:</label>
+                    <input type="number" id="year" placeholder="Publication year">
+                </div>
+                <button onclick="addBook()">Add Book</button>
+                <div class="results" id="addBookResult"></div>
+            </div>
+            
+            <!-- Filter Books Section -->
+            <div class="section">
+                <h2>Filter Books</h2>
+                <div class="form-group">
+                    <label for="filterCountry">Filter by Country:</label>
+                    <select id="filterCountry">
+                        <option value="">Select Country</option>
+                        <option value="Nigeria">Nigeria</option>
+                        <option value="Ghana">Ghana</option>
+                    </select>
+                </div>
+                <button onclick="filterByCountry()">Filter by Country</button>
+                <button onclick="getAvailableBooks()">Get Available Books</button>
+                <div class="results" id="filterResult"></div>
+            </div>
+            
+            <!-- Update Book Section -->
+            <div class="section">
+                <h2>Update Book</h2>
+                <div class="form-group">
+                    <label for="updateId">Book ID:</label>
+                    <input type="number" id="updateId" placeholder="Enter book ID to update" min="1">
+                </div>
+                <div class="form-group">
+                    <label for="updateTitle">New Title:</label>
+                    <input type="text" id="updateTitle" placeholder="Leave blank to keep current">
+                </div>
+                <div class="form-group">
+                    <label for="updateAvailable">Available:</label>
+                    <select id="updateAvailable">
+                        <option value="">No change</option>
+                        <option value="true">Available</option>
+                        <option value="false">Not Available</option>
+                    </select>
+                </div>
+                <button onclick="updateBook()">Update Book</button>
+                <div class="results" id="updateResult"></div>
+            </div>
+            
+            <!-- Delete Book Section -->
+            <div class="section">
+                <h2>Delete Book</h2>
+                <div class="form-group">
+                    <label for="deleteId">Book ID:</label>
+                    <input type="number" id="deleteId" placeholder="Enter book ID to delete" min="1">
+                </div>
+                <button onclick="deleteBook()">Delete Book</button>
+                <div class="results" id="deleteResult"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = 'http://localhost:5000';
+        
+        function displayResult(elementId, data, isError = false) {
+            const element = document.getElementById(elementId);
+            if (isError) {
+                element.innerHTML = `<div class="error">${data}</div>`;
+            } else {
+                element.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            }
+        }
+        
+        async function getAllBooks() {
+            try {
+                const response = await fetch(`${API_URL}/books`);
+                const data = await response.json();
+                displayResult('allBooksResult', data);
+            } catch (error) {
+                displayResult('allBooksResult', `Error: ${error.message}`, true);
+            }
+        }
+        
+        async function getBookById() {
+            const id = document.getElementById('bookId').value;
+            if (!id) {
+                displayResult('bookByIdResult', 'Please enter a book ID', true);
+                return;
+            }
+            try {
+                const response = await fetch(`${API_URL}/books/${id}`);
+                const data = await response.json();
+                displayResult('bookByIdResult', data);
+            } catch (error) {
+                displayResult('bookByIdResult', `Error: ${error.message}`, true);
+            }
+        }
+        
+        async function addBook() {
+            const title = document.getElementById('title').value;
+            const author = document.getElementById('author').value;
+            const genre = document.getElementById('genre').value;
+            const country = document.getElementById('country').value;
+            const year = document.getElementById('year').value;
+            
+            if (!title || !author || !genre || !country) {
+                displayResult('addBookResult', 'Please fill in all required fields', true);
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/books`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title, author, genre, country,
+                        year: year ? parseInt(year) : new Date().getFullYear()
+                    })
+                });
+                const data = await response.json();
+                displayResult('addBookResult', data);
+                if (data.success) {
+                    document.getElementById('title').value = '';
+                    document.getElementById('author').value = '';
+                    document.getElementById('genre').value = '';
+                    document.getElementById('country').value = '';
+                    document.getElementById('year').value = '';
+                }
+            } catch (error) {
+                displayResult('addBookResult', `Error: ${error.message}`, true);
+            }
+        }
+        
+        async function filterByCountry() {
+            const country = document.getElementById('filterCountry').value;
+            if (!country) {
+                displayResult('filterResult', 'Please select a country', true);
+                return;
+            }
+            try {
+                const response = await fetch(`${API_URL}/books/filter/country/${country}`);
+                const data = await response.json();
+                displayResult('filterResult', data);
+            } catch (error) {
+                displayResult('filterResult', `Error: ${error.message}`, true);
+            }
+        }
+        
+        async function getAvailableBooks() {
+            try {
+                const response = await fetch(`${API_URL}/books/filter/available`);
+                const data = await response.json();
+                displayResult('filterResult', data);
+            } catch (error) {
+                displayResult('filterResult', `Error: ${error.message}`, true);
+            }
+        }
+        
+        async function updateBook() {
+            const id = document.getElementById('updateId').value;
+            const title = document.getElementById('updateTitle').value;
+            const available = document.getElementById('updateAvailable').value;
+            
+            if (!id) {
+                displayResult('updateResult', 'Please enter a book ID', true);
+                return;
+            }
+            
+            const body = {};
+            if (title) body.title = title;
+            if (available !== '') body.available = available === 'true';
+            
+            try {
+                const response = await fetch(`${API_URL}/books/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const data = await response.json();
+                displayResult('updateResult', data);
+            } catch (error) {
+                displayResult('updateResult', `Error: ${error.message}`, true);
+            }
+        }
+        
+        async function deleteBook() {
+            const id = document.getElementById('deleteId').value;
+            if (!id) {
+                displayResult('deleteResult', 'Please enter a book ID', true);
+                return;
+            }
+            try {
+                const response = await fetch(`${API_URL}/books/${id}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+                displayResult('deleteResult', data);
+                if (data.success) {
+                    document.getElementById('deleteId').value = '';
+                }
+            } catch (error) {
+                displayResult('deleteResult', `Error: ${error.message}`, true);
+            }
+        }
+    </script>
+</body>
+</html>

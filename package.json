@@ -1,0 +1,19 @@
+{
+  "name": "book-library-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["api", "books", "african", "library"],
+  "author": "Chukwuma Stephen Nwala",
+  "license": "ISC",
+  "description": "A RESTful API for managing African books collection",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  }
+}
